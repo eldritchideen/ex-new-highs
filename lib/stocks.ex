@@ -37,7 +37,7 @@ defmodule Stocks do
 
   def get_html do
     HTTPoison.start
-    resp = HTTPoison.get!("http://www.smh.com.au/business/markets/52-week-highs?page=-1",[], [proxy: "http://proxy.cat.com:80"])
+    resp = HTTPoison.get!("http://www.smh.com.au/business/markets/52-week-highs?page=-1",[], [])
     resp.body
   end
 
