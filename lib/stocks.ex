@@ -120,4 +120,17 @@ defmodule Stocks do
     end
   end
 
+  def consolidate_to_week(highs) do
+    highs
+    |> Stream.map(fn ({k,v}) -> {Chronos.beginning_of_week(k), v} end)
+    |> Enum.reduce( HashDict.new,
+         fn ({k,v}, acc) ->
+           lst = case Dict.fetch(acc, k) do
+             {:ok, val} -> val
+             :error -> []
+           end
+           Dict.put(acc, k, lst ++ v)
+         end)
+  end
+
 end
