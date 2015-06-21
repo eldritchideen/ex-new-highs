@@ -9,7 +9,7 @@ defmodule Stocks do
   # TODO: Remove from final source.
   def get_highs do
     HashDict.new
-    |> Dict.put({2015, 6, 17} , ["FLN", "MIG", "TAN", "SHL"])
+    |> Dict.put({2015, 6, 17} , ["FLN", "MIG", "FMG", "SHL"])
     |> Dict.put({2015, 6, 18} , ["FMG", "CTX", "XYZ"])
   end
 
@@ -131,6 +131,17 @@ defmodule Stocks do
            end
            Dict.put(acc, k, lst ++ v)
          end)
+    |> Enum.map(fn ({k,v}) -> {k, count_highs v} end)
   end
+
+  def count_highs(xs) do
+    Enum.reduce(xs, HashDict.new,
+      fn (x, acc) ->
+        count = Dict.get(acc, x, 0)
+        Dict.put(acc, x, count + 1)
+      end)
+  end
+
+
 
 end
