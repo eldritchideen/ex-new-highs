@@ -145,6 +145,11 @@ defmodule Stocks do
     |> Enum.sort(fn ({_, x}, {_, y}) -> x > y end)
   end
 
-
+  def main() do
+    highs = read_highs("asx-highs.csv")
+    highs = update_new_highs(highs)
+    IO.inspect(highs)
+    write_highs(highs,"asx-highs.csv")
+  end
 
 end
