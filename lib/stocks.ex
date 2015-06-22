@@ -131,7 +131,8 @@ defmodule Stocks do
            end
            Dict.put(acc, k, lst ++ v)
          end)
-    |> Enum.map(fn ({k,v}) -> {k, count_highs v} end)
+    |> Stream.map(fn ({k,v}) -> {k, count_highs v} end)
+    |> Enum.into(HashDict.new)
   end
 
   def count_highs(xs) do
@@ -140,6 +141,8 @@ defmodule Stocks do
         count = Dict.get(acc, x, 0)
         Dict.put(acc, x, count + 1)
       end)
+    |> Enum.into([])
+    |> Enum.sort(fn ({_, x}, {_, y}) -> x > y end)
   end
 
 
