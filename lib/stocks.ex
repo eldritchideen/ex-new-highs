@@ -148,7 +148,6 @@ defmodule Stocks do
   def main() do
     highs = read_highs("asx-highs.csv")
     highs = update_new_highs(highs)
-    IO.inspect(highs)
     write_highs(highs,"asx-highs.csv")
     highs
   end
