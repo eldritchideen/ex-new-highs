@@ -150,6 +150,19 @@ defmodule Stocks do
     highs = update_new_highs(highs)
     IO.inspect(highs)
     write_highs(highs,"asx-highs.csv")
+    highs
+  end
+
+  def loop() do
+    main()
+    :timer.sleep(60_000)
+    loop()
+  end
+
+  def run() do
+    spawn(fn ->
+      loop()
+    end)
   end
 
 end
