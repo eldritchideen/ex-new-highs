@@ -8,9 +8,9 @@ defmodule Stocks do
   # Test only method to help generate data for REPL based testing.
   # TODO: Remove from final source.
   def get_highs do
-    HashDict.new
-    |> Dict.put({2015, 6, 17} , ["FLN", "MIG", "FMG", "SHL"])
-    |> Dict.put({2015, 6, 18} , ["FMG", "CTX", "XYZ"])
+    %{}
+    |> Map.put({2015, 6, 17} , ["FLN", "MIG", "FMG", "SHL"])
+    |> Map.put({2015, 6, 18} , ["FMG", "CTX", "XYZ"])
   end
 
   defp month_to_num(month) do
@@ -59,9 +59,9 @@ defmodule Stocks do
   end
 
   @doc """
-  Given a Dict of share data, fetch new data from the web and update the Dict.
+  Given a Map of share data, fetch new data from the web and update the Map.
 
-  Contents of the Dict are in the format:
+  Contents of the Map are in the format:
     {date} => [share codes]
   """
   def update_new_highs(highs) do
@@ -69,7 +69,7 @@ defmodule Stocks do
     date = get_date(html)
     new_highs = get_new_highs(html)
 
-    Dict.put(highs, date, new_highs)
+    Map.put(highs, date, new_highs)
   end
 
   defp list_to_csv_str(lst) do
@@ -78,7 +78,7 @@ defmodule Stocks do
   end
 
   @doc """
-  Encode the contents of the Dict to a CSV format for file storage.
+  Encode the contents of the Map to a CSV format for file storage.
   """
   def highs_to_str(highs) do
     Enum.reduce(highs, "",
@@ -88,7 +88,7 @@ defmodule Stocks do
   end
 
   @doc """
-  Write the new high Dict to file.
+  Write the new high Map to file.
   """
   def write_highs(highs, file) do
     File.write!(file, highs_to_str(highs), [:write])
@@ -104,42 +104,42 @@ defmodule Stocks do
   end
 
   @doc """
-  Read in previous new high data and store it in a Dict.
+  Read in previous new high data and store it in a Map.
   """
   def read_highs(file) do
     case File.read(file) do
       {:ok, lines} ->
         lines
         |> String.split("\n", trim: true)
-        |> Enum.reduce(HashDict.new,
+        |> Enum.reduce(%{},
             fn (x, acc) ->
               {k, v} = decode_str(x)
-              Dict.put(acc, k, v)
+              Map.put(acc, k, v)
             end)
-      {:error, _} -> HashDict.new()
+      {:error, _} -> %{}
     end
   end
 
   def consolidate_to_week(highs) do
     highs
     |> Stream.map(fn ({k,v}) -> {Chronos.beginning_of_week(k), v} end)
-    |> Enum.reduce( HashDict.new,
+    |> Enum.reduce( %{},
          fn ({k,v}, acc) ->
-           lst = case Dict.fetch(acc, k) do
+           lst = case Map.fetch(acc, k) do
              {:ok, val} -> val
              :error -> []
            end
-           Dict.put(acc, k, lst ++ v)
+           Map.put(acc, k, lst ++ v)
          end)
     |> Stream.map(fn ({k,v}) -> {k, count_highs v} end)
-    |> Enum.into(HashDict.new)
+    |> Enum.into(%{})
   end
 
   def count_highs(xs) do
-    Enum.reduce(xs, HashDict.new,
+    Enum.reduce(xs, %{},
       fn (x, acc) ->
-        count = Dict.get(acc, x, 0)
-        Dict.put(acc, x, count + 1)
+        count = Map.get(acc, x, 0)
+        Map.put(acc, x, count + 1)
       end)
     |> Enum.into([])
     |> Enum.sort(fn ({_, x}, {_, y}) -> x > y end)
