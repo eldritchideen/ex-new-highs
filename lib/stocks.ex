@@ -72,11 +72,6 @@ defmodule Stocks do
     Map.put(highs, date, new_highs)
   end
 
-  defp list_to_csv_str(lst) do
-    Enum.reduce(lst, "",
-         fn (x, acc) -> acc <> x <> "," end)
-  end
-
   @doc """
   Encode the contents of the Map to a CSV format for file storage.
   """
@@ -84,7 +79,7 @@ defmodule Stocks do
     Enum.reduce(highs, "",
       fn ({date, new_highs}, acc) ->
         acc <> date_to_str(date) <> ","
-            <> list_to_csv_str(new_highs) <> "\n" end)
+            <> Enum.join(new_highs, ",") <> "\n" end)
   end
 
   @doc """
